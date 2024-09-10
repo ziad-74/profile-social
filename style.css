@@ -1,7 +1,8 @@
-/* General styles */
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
+    font-size: 1.1em;
     box-sizing: border-box;
 }
 
@@ -12,27 +13,25 @@ body {
     text-align: center;
     padding: 20px;
 }
-.profile-card--avatar {
-    display: inline-block;
-    position: relative;
-}
-.profile-verification-badge {
-    position: absolute;
-    right: 5%;
-    top: 63%;
 
-}
+/* Profile Card */
 .profile {
     max-width: 600px;
     margin: 0 auto;
-    
     background-color: #181818;
     border-radius: 10px;
     padding: 20px;
 }
 
-.header {
-    margin-bottom: 20px;
+.profile-card--avatar {
+    display: inline-block;
+    position: relative;
+}
+
+.profile-verification-badge {
+    position: absolute;
+    right: 5%;
+    top: 63%;
 }
 
 .profile-img {
@@ -41,6 +40,10 @@ body {
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
+}
+
+.header {
+    margin-bottom: 20px;
 }
 
 h1 {
@@ -53,20 +56,21 @@ p {
     font-size: 16px;
 }
 
-.socials a{
+/* Social Links */
+.socials a {
     font-size: 1.7em;
     padding: 8px;
     margin-left: 5px;
     transition: 0.5s ease;
-
 }
-.socials a:hover{
+
+.socials a:hover {
     font-size: 1.5em;
 }
 
+/* Links */
 .links a {
     display: block;
-
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
@@ -76,13 +80,15 @@ p {
 }
 
 .links a:hover {
-
     transition: 0.5s ease;
 }
+
 a {
     text-decoration: none;
 }
-/* Responsive */
+
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     .profile {
         padding: 10px;
@@ -108,39 +114,4 @@ a {
     .links a {
         padding: 8px;
     }
-}
-audio:hover, audio:focus, audio:active
-{
--webkit-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
--moz-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
-box-shadow: 15px 15px 20px rgba(0,0, 0, 0.4);
--webkit-transform: scale(1.05);
--moz-transform: scale(1.05);
-transform: scale(1.05);
-}
-
-
-.player-container,
-.player-container1 {
-    background-color: rgb(56 62 76 / 14%);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    margin-bottom: -8px;
-    max-width: 300px;
-
-}
-audio
-{
--webkit-transition:all 0.5s linear;
--moz-transition:all 0.5s linear;
--o-transition:all 0.5s linear;
-transition:all 0.5s linear;
--moz-box-shadow: 2px 2px 4px 0px #006773;
--webkit-box-shadow:  2px 2px 4px 0px #006773;
-box-shadow: 2px 2px 4px 0px #006773;
--moz-border-radius:7px 7px 7px 7px ;
--webkit-border-radius:7px 7px 7px 7px ;
-border-radius:7px 7px 7px 7px ;
 }
