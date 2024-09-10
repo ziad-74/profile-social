@@ -18,8 +18,9 @@ body {
 }
 .profile-verification-badge {
     position: absolute;
-    right: 0;
-    top: 67%;
+    right: .3em;
+    top: 65%;
+
 }
 .profile {
     max-width: 600px;
