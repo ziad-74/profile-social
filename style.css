@@ -25,7 +25,8 @@ body {
 .profile {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #121212;
+    
+    background-color: #181818;
     border-radius: 10px;
     padding: 20px;
 }
@@ -44,7 +45,7 @@ body {
 
 h1 {
     font-size: 24px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 p {
@@ -52,11 +53,6 @@ p {
     font-size: 16px;
 }
 
-
-
-.music-player {
-    margin: 20px 0;
-}
 .socials a{
     font-size: 1.7em;
     padding: 8px;
@@ -70,7 +66,7 @@ p {
 
 .links a {
     display: block;
-    background-color: #333;
+
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
@@ -80,7 +76,8 @@ p {
 }
 
 .links a:hover {
-    background-color: #000000;
+
+    transition: 0.5s ease;
 }
 
 /* Responsive */
