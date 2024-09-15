@@ -132,6 +132,10 @@ p {
     transition: 0.5s ease;
 }
 
+.links p {
+    margin-top: -10px;
+}
+
 a {
     text-decoration: none;
 }
