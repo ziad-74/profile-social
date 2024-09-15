@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -14,13 +15,21 @@ body {
     padding: 20px;
 }
 
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
 
 .profile {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #292929;
+    background-color: #29292900;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
 }
 
 .profile-card--avatar {
@@ -54,6 +63,7 @@ body {
     transform: translateX(-50%);
     border: 3px solid #ffffff;
 }
+
 .profile-verification-badge {
     position: absolute;
     right: 50%;
@@ -71,7 +81,7 @@ body {
 }
 
 .header {
-    margin-bottom:20px; 
+    margin-bottom: 20px; 
 }
 
 h1 {
@@ -103,7 +113,6 @@ p {
 
 /* Links */
 .links a {
-    
     display: block;
     padding: 10px;
     margin: 10px 0;
@@ -112,14 +121,15 @@ p {
     text-decoration: none;
     transition: background-color 0.3s;
 }
-.links{
+
+.links {
     font-family: "Amiri", serif;
     font-weight: 400;
     font-style: normal;
 }
+
 .links a:hover {
     transition: 0.5s ease;
-
 }
 
 a {
@@ -129,7 +139,7 @@ a {
 /* Responsive Styles */
 @media (max-width: 768px) {
     .profile {
-        padding: 10px;
+        padding: 0px;
     }
 
     h1 {
@@ -140,7 +150,6 @@ a {
         font-size: 14px;
     }
 
-
     .socials a img {
         width: 25px;
     }
@@ -150,7 +159,8 @@ a {
         color: #ffffffd0;
     }
 }
-.links p{
+
+.links p {
     font-family: "Amiri", serif;
     font-weight: 400;
     font-style: normal;
@@ -160,4 +170,4 @@ a {
 
 .animate__animated {
     --animate-duration: 1.25s;
-  }
+}

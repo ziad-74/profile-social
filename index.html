@@ -1,14 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ziad Ayman</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <canvas id="bgCanvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, pointCloud;
+        const particles = 10000;
+        const pointsArray = [];
+        let colorChangeTimer = 0; // متغير للتحكم بتغيير اللون
+
+        function init() {
+            const canvas = document.getElementById('bgCanvas');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.position.z = 5;
+
+            const geometry = new THREE.BufferGeometry();
+            for (let i = 0; i < particles; i++) {
+                const x = (Math.random() - 0.5) * 1000;
+                const y = (Math.random() - 0.5) * 1000;
+                const z = (Math.random() - 0.5) * 1000;
+                pointsArray.push(x, y, z);
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(pointsArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                color: 0x00ff00, // لون مبدئي
+                size: 0.7, // زيادة حجم النجوم قليلاً
+                sizeAttenuation: true,
+            });
+
+            pointCloud = new THREE.Points(geometry, material);
+            scene.add(pointCloud);
+
+            animate();
+        }
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // تدوير النجوم
+            pointCloud.rotation.x += 0.001;
+            pointCloud.rotation.y += 0.001;
+
+            // تغيير اللون كل ثانية تقريبًا
+            colorChangeTimer += 0.001;
+            if (colorChangeTimer >= 1) {
+                pointCloud.material.color.set(getRandomColor());
+                colorChangeTimer = 0; // إعادة ضبط المؤقت
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
     <div class="profile">
         <div class="header">
             <div class="profile-card--avatar">
@@ -18,8 +87,8 @@
                 <div>
                     <img src="imgs/profile.jpg" alt="ziad" class="profile-img">
                 </div>
-                <div class="profile-verification-badge ">
-                    <img src="imgs/verification-badge.svg" alt="">
+                <div class="profile-verification-badge">
+                    <img src="imgs/verification-badge.svg" alt="verified">
                 </div>
             </div>
             <h1>Ziad Ayman</h1>
@@ -34,27 +103,26 @@
                     <i class="fa-brands fa-telegram animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
                 <a href="https://www.tiktok.com/@eng._ziad"> 
-                    <i class="fa-brands fa-tiktok animate__animated animate__flip"style="color: #ffffffd0;"></i>
+                    <i class="fa-brands fa-tiktok animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
             </div>
         </div>
         <div style="margin-bottom: 20px;">
             <p style="display: inline;margin-right: -15px;">❤️</p>
             <p style="display: inline;">صلي على النبي</p>
-
         </div>
-        
 
-        <div   class="links">
-            <a  href="http://ziad880.sarhne.com">
-                <i class="fa-solid fa-envelope  animate__animated animate__zoomInLeft"><p>صراحة</p> </i>
-            </a></div><div class="links">
-            <a href="https://ziad880.github.io/quran-website/">
-                <i class="fa-solid fa-mosque animate__animated animate__zoomInRight"> <p>موقع استماع للقرأن الكريم </p></i>
+        <div class="links">
+            <a href="http://ziad880.sarhne.com">
+                <i class="fa-solid fa-envelope animate__animated animate__zoomInLeft"></i>
+                <p>صراحة</p>
             </a>
-
-
-
+        </div>
+        <div class="links">
+            <a href="https://ziad880.github.io/quran-website/">
+                <i class="fa-solid fa-mosque animate__animated animate__zoomInRight"></i>
+                <p>موقع استماع للقرآن الكريم</p>
+            </a>
         </div>
     </div>
 </body>
