@@ -245,11 +245,12 @@
                         <th><i class="fa-solid fa-laptop-code"></i> الجهاز</th>
                         <th><i class="fa-solid fa-microchip"></i> النظام</th>
                         <th><i class="fa-solid fa-mobile-screen-button"></i> النوع</th>
+                        <th>اسم الحساب</th>
                         <th><i class="fa-solid fa-link"></i> المصدر</th>
                     </tr>
                 </thead>
                 <tbody id="logs-table">
-                    <tr><td colspan="6" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -298,6 +299,7 @@
           let deviceType = log.deviceType || '';
           let ref = log.referrer || '';
           let refDisplay = ref;
+          let usernameDisplay = '';
           // دالة استخراج اسم الحساب من الرابط
           function extractUsername(ref, domain) {
             // معالجة روابط l.instagram.com (روابط التحويل)
@@ -352,49 +354,62 @@
           }
           if (!ref || ref === 'مباشر') {
             refDisplay = 'مباشر';
+            usernameDisplay = '';
           } else if (/instagram\.com/i.test(ref)) {
             let username = extractUsername(ref, 'instagram.com');
             refDisplay = 'انستجرام' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/facebook\.com/i.test(ref)) {
             let username = extractUsername(ref, 'facebook.com');
             refDisplay = 'فيسبوك' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/t\.me|telegram\.me|telegram\.org/i.test(ref)) {
             let username = extractUsername(ref, 'telegram');
             refDisplay = 'تليجرام' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/wa\.me|whatsapp\.com/i.test(ref)) {
             let username = extractUsername(ref, 'whatsapp');
             refDisplay = 'واتساب' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/twitter\.com/i.test(ref)) {
             let username = extractUsername(ref, 'twitter.com');
             refDisplay = 'تويتر' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/snapchat\.com/i.test(ref)) {
             let username = extractUsername(ref, 'snapchat.com');
             refDisplay = 'سناب شات' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/youtube\.com|youtu\.be/i.test(ref)) {
             let username = extractUsername(ref, 'youtube');
             refDisplay = 'يوتيوب' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/linkedin\.com/i.test(ref)) {
             let username = extractUsername(ref, 'linkedin.com');
             refDisplay = 'لينكدإن' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/tiktok\.com/i.test(ref)) {
             let username = extractUsername(ref, 'tiktok.com');
             refDisplay = 'تيك توك' + (username ? ` (${username})` : '');
+            usernameDisplay = username;
           } else if (/google\./i.test(ref)) {
             refDisplay = 'جوجل';
+            usernameDisplay = '';
           }
           if (os.length > 12) os = os.slice(0, 12) + '...';
           if (deviceType.length > 12) deviceType = deviceType.slice(0, 12) + '...';
           if (refDisplay.length > 30) refDisplay = refDisplay.slice(0, 30) + '...';
+          if (usernameDisplay && usernameDisplay.length > 30) usernameDisplay = usernameDisplay.slice(0, 30) + '...';
           return `<tr>
             <td>${log.type}</td>
             <td>${formatted}</td>
             <td class="device-cell" data-full="${log.device ? log.device.replace(/\"/g, '&quot;') : ''}"><i class='fa-solid fa-laptop'></i> ${device}</td>
             <td class="os-cell" data-full="${log.os ? log.os.replace(/\"/g, '&quot;') : ''}">${os}</td>
             <td class="type-cell" data-full="${log.deviceType ? log.deviceType.replace(/\"/g, '&quot;') : ''}">${deviceType}</td>
+            <td class="username-cell" data-full="${usernameDisplay}">${usernameDisplay || '-'}</td>
             <td class="ref-cell" data-full="${log.referrer ? log.referrer.replace(/\"/g, '&quot;') : ''}" title="${log.referrer || ''}">${refDisplay}</td>
           </tr>`;
         }).join('');
-        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
+        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="7" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
         // إظهار/إخفاء زر عرض المزيد
         const btn = document.getElementById('show-more-btn');
         if (logsData.length > logsShown) {
