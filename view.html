@@ -196,10 +196,10 @@
             .logs-table td.ref-cell { max-width: 80px; }
         }
         @media (max-width: 600px) {
-            .logs-table th, .logs-table td { padding: 6px 2px; font-size: 0.93em; }
-            .logs-table td.device-cell { max-width: 80px; }
-            .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 40px; }
-            .logs-table td.ref-cell { max-width: 60px; }
+            .logs-table th, .logs-table td { padding: 0px 2px; font-size: 0.93em; }
+            .logs-table td.device-cell { max-width: 210px; }
+            .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 150px; }
+            .logs-table td.ref-cell { max-width: 150px; }
         }
         .logs-table-wrapper {
             overflow-x: auto;
@@ -217,6 +217,7 @@
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/1.0.36/ua-parser.min.js"></script>
 </head>
 <body>
     <div class="stats-container">
@@ -245,12 +246,11 @@
                         <th><i class="fa-solid fa-laptop-code"></i> الجهاز</th>
                         <th><i class="fa-solid fa-microchip"></i> النظام</th>
                         <th><i class="fa-solid fa-mobile-screen-button"></i> النوع</th>
-                        <th>اسم الحساب</th>
                         <th><i class="fa-solid fa-link"></i> المصدر</th>
                     </tr>
                 </thead>
                 <tbody id="logs-table">
-                    <tr><td colspan="7" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -293,8 +293,19 @@
         const rows = logsToShow.map(log => {
           const date = new Date(log.timestamp);
           const formatted = date.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
-          let device = log.device || '';
-          if (device.length > 40) device = device.slice(0, 40) + '...';
+          let userAgent = log.device || '';
+          let device = 'جهاز غير معروف';
+          if (window.UAParser) {
+            const parser = new UAParser(userAgent);
+            const dev = parser.getDevice();
+            const os = parser.getOS();
+            // اسم الجهاز الكامل (موديل أو اسم)
+            if (dev && dev.model) {
+              device = dev.vendor ? `${dev.vendor} ${dev.model}` : dev.model;
+            } else if (os && os.name) {
+              device = os.name + (os.version ? ' ' + os.version : '');
+            }
+          }
           let os = log.os || '';
           let deviceType = log.deviceType || '';
           let ref = log.referrer || '';
@@ -304,13 +315,10 @@
           function extractUsername(ref, domain) {
             // معالجة روابط l.instagram.com (روابط التحويل)
             if (ref.includes('l.instagram.com')) {
-              // استخراج الرابط الأصلي من باراميتر ?u=...
               const urlMatch = ref.match(/[?&]u=([^&]+)/i);
               if (urlMatch) {
                 try {
-                  // نفك ترميز الرابط
                   const realUrl = decodeURIComponent(urlMatch[1]);
-                  // نعيد استدعاء الدالة نفسها على الرابط الأصلي
                   return extractUsername(realUrl, domain);
                 } catch(e) {}
               }
@@ -320,36 +328,28 @@
               'instagram.com', 'facebook.com', 'twitter.com', 'snapchat.com', 'linkedin.com', 'tiktok.com'
             ];
             if (simpleDomains.some(d => ref.includes(d))) {
-              const m = ref.match(/\/(?:[a-zA-Z0-9_.-]+\.)?(?:instagram|facebook|twitter|snapchat|linkedin|tiktok)\.com\/([^/?#]+)/i);
+              // دعم وجود @ في الرابط
+              const m = ref.match(/\/(?:[a-zA-Z0-9_.-]+\.)?(?:instagram|facebook|twitter|snapchat|linkedin|tiktok)\.com\/(?:@)?([^/?#]+)/i);
               if (m) return m[1];
             }
             // يوتيوب: قناة أو مستخدم أو اسم مخصص
             if (ref.includes('youtube.com')) {
-              // قناة
-              let m = ref.match(/youtube\.com\/channel\/([^/?#]+)/i);
-              if (m) return m[1];
-              // مستخدم
-              m = ref.match(/youtube\.com\/user\/([^/?#]+)/i);
-              if (m) return m[1];
-              // اسم مخصص
-              m = ref.match(/youtube\.com\/c\/([^/?#]+)/i);
+              let m = ref.match(/youtube\.com\/(?:channel|user|c)\/([^/?#]+)/i);
               if (m) return m[1];
             }
-            // يوتيوب مختصر
             if (ref.includes('youtu.be')) {
               const m = ref.match(/youtu\.be\/([^/?#]+)/i);
               if (m) return m[1];
             }
-            // تليجرام
             if (/t\.me|telegram\.me|telegram\.org/i.test(ref)) {
               const m = ref.match(/(?:t\.me|telegram\.me|telegram\.org)\/([^/?#]+)/i);
               if (m) return m[1];
             }
-            // واتساب
             if (/wa\.me|whatsapp\.com/i.test(ref)) {
               const m = ref.match(/(?:wa\.me|whatsapp\.com)\/([^/?#]+)/i);
               if (m) return m[1];
             }
+            // إذا لم نجد اسم حساب، نعيد referrer نفسه
             return '';
           }
           if (!ref || ref === 'مباشر') {
@@ -402,14 +402,13 @@
           return `<tr>
             <td>${log.type}</td>
             <td>${formatted}</td>
-            <td class="device-cell" data-full="${log.device ? log.device.replace(/\"/g, '&quot;') : ''}"><i class='fa-solid fa-laptop'></i> ${device}</td>
+            <td class="device-cell" data-full="${userAgent.replace(/\"/g, '&quot;')}"><i class='fa-solid fa-laptop'></i> ${device}</td>
             <td class="os-cell" data-full="${log.os ? log.os.replace(/\"/g, '&quot;') : ''}">${os}</td>
             <td class="type-cell" data-full="${log.deviceType ? log.deviceType.replace(/\"/g, '&quot;') : ''}">${deviceType}</td>
-            <td class="username-cell" data-full="${usernameDisplay}">${usernameDisplay || '-'}</td>
             <td class="ref-cell" data-full="${log.referrer ? log.referrer.replace(/\"/g, '&quot;') : ''}" title="${log.referrer || ''}">${refDisplay}</td>
           </tr>`;
         }).join('');
-        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="7" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
+        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
         // إظهار/إخفاء زر عرض المزيد
         const btn = document.getElementById('show-more-btn');
         if (logsData.length > logsShown) {
@@ -433,11 +432,9 @@
       // توسعة خلية الجهاز عند النقر
       document.addEventListener('click', function(e) {
         const cell = e.target;
-        // الجهاز
         if (cell.classList.contains('device-cell')) {
           if (cell.classList.contains('expanded')) {
             let device = cell.getAttribute('data-full') || '';
-            if (device.length > 40) device = device.slice(0, 40) + '...';
             cell.innerHTML = `<i class='fa-solid fa-laptop'></i> ${device}`;
             cell.classList.remove('expanded');
           } else {
@@ -448,12 +445,8 @@
         }
         // النظام أو النوع أو المصدر
         if (cell.classList.contains('os-cell') || cell.classList.contains('type-cell') || cell.classList.contains('ref-cell')) {
-          const key = cell.classList.contains('os-cell') ? 'os' : cell.classList.contains('type-cell') ? 'deviceType' : 'referrer';
           if (cell.classList.contains('expanded')) {
             let val = cell.getAttribute('data-full') || '';
-            if (key === 'os' && val.length > 12) val = val.slice(0, 12) + '...';
-            if (key === 'deviceType' && val.length > 12) val = val.slice(0, 12) + '...';
-            if (key === 'referrer' && val.length > 30) val = val.slice(0, 30) + '...';
             cell.textContent = val;
             cell.classList.remove('expanded');
           } else {
