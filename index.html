@@ -15,6 +15,8 @@
 <body>
     <canvas id="bgCanvas"></canvas>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
         let scene, camera, renderer, pointCloud;
         const particles = 10000;
@@ -81,6 +83,62 @@
         });
 
         init();
+
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVuLFl1SebU4blyQn7QiZD9iOqGZOoxDQ",
+            authDomain: "profile-social-ae8e2.firebaseapp.com",
+            projectId: "profile-social-ae8e2",
+            storageBucket: "profile-social-ae8e2.appspot.com",
+            messagingSenderId: "357588637122",
+            appId: "1:357588637122:web:bed704321232151f07b25b",
+            measurementId: "G-H851GDEN09",
+            databaseURL: "https://profile-social-ae8e2-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // زيادة عدد الزوار
+        function incrementVisitorCount() {
+            const ref = db.ref('counters/visitors');
+            ref.transaction(current => (current || 0) + 1);
+        }
+
+        // زيادة عدد الضغطات على زر
+        function incrementButtonCount(buttonId) {
+            const ref = db.ref('counters/' + buttonId);
+            ref.transaction(current => (current || 0) + 1);
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            incrementVisitorCount();
+            // ربط الأزرار الرئيسية
+            document.getElementById('portfolio-btn').addEventListener('click', function() {
+                incrementButtonCount('portfolio');
+            });
+            document.getElementById('sarhne-btn').addEventListener('click', function() {
+                incrementButtonCount('sarhne');
+            });
+            document.getElementById('sadaqa-btn').addEventListener('click', function() {
+                incrementButtonCount('sadaqa');
+            });
+            // ربط أزرار السوشيال
+            document.getElementById('tiktok-btn').addEventListener('click', function() {
+                incrementButtonCount('tiktok');
+            });
+            document.getElementById('telegram-btn').addEventListener('click', function() {
+                incrementButtonCount('telegram');
+            });
+            document.getElementById('whatsapp-btn').addEventListener('click', function() {
+                incrementButtonCount('whatsapp');
+            });
+            document.getElementById('facebook-btn').addEventListener('click', function() {
+                incrementButtonCount('facebook');
+            });
+            document.getElementById('instagram-btn').addEventListener('click', function() {
+                incrementButtonCount('instagram');
+            });
+        });
     </script>
     <div class="profile">
         <div class="header">
@@ -97,20 +155,19 @@
             </div>
             <h1>Ziad Ayman</h1>
             <div class="socials">
-                <a href="https://www.tiktok.com/@eng._ziad"> 
+                <a href="https://www.tiktok.com/@eng._ziad" id="tiktok-btn"> 
                     <i class="fa-brands fa-tiktok animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
-                <a href="https://t.me/ziad_ayman"> 
+                <a href="https://t.me/ziad_ayman" id="telegram-btn"> 
                 <i class="fa-brands fa-telegram animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
-                                <a href="https://wa.me/201125270148
-"> 
+                <a href="https://wa.me/201125270148" id="whatsapp-btn"> 
 <i class="fa-brands fa-whatsapp animate__animated animate__flip"style="color: #ffffffd0;"></i>
                 </a>
-                <a href="https://www.facebook.com/ziad.74.72"> 
+                <a href="https://www.facebook.com/ziad.74.72" id="facebook-btn"> 
                     <i class="fa-brands fa-facebook animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
-                    <a href="https://www.instagram.com/ziad_2ymn/"> 
+                <a href="https://www.instagram.com/ziad_2ymn/" id="instagram-btn"> 
                     <i class="fa-brands fa-instagram animate__animated animate__flip" style="color: #ffffffd0;"></i>
                 </a>
             </div>
@@ -120,21 +177,18 @@
             <p style="display: inline;margin-right: -15px;">❤️</p>
         </div>
         <div class="links">
-            <a href="https://ziad-portfolio.codemz.com">
+            <a href="https://ziad-portfolio.codemz.com" id="portfolio-btn">
                 <i class="fa-solid fa-address-card animate__animated animate__zoomInLeft"><p>البورتفوليو</p></i>
-                
             </a>
         </div>
         <div class="links">
-            <a href="http://ziad880.sarhne.com">
+            <a href="http://ziad880.sarhne.com" id="sarhne-btn">
                 <i class="fa-solid fa-envelope animate__animated animate__zoomInLeft"><p>صراحة</p></i>
-                
             </a>
         </div>
         <div class="links">
-            <a href="https://dar-almumin.codemz.com">
+            <a href="https://dar-almumin.codemz.com" id="sadaqa-btn">
                 <i class="fa-solid fa-mosque animate__animated animate__zoomInRight"><p> صدقة جارية عني </p></i>
-                
             </a>
         </div>
     </div>

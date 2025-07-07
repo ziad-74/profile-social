@@ -1,0 +1,20 @@
+{
+  "name": "profile-social",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ziad-74/profile-social.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ziad-74/profile-social/issues"
+  },
+  "homepage": "https://github.com/ziad-74/profile-social#readme",
+  "description": ""
+}

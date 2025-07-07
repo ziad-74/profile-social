@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إحصائيات الموقع</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            color: #fff;
+            font-family: 'Tajawal', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .stats-container {
+            max-width: 430px;
+            margin: 48px auto 0 auto;
+            background: rgba(34, 34, 34, 0.97);
+            border-radius: 20px;
+            padding: 36px 28px 28px 28px;
+            box-shadow: 0 4px 32px #0007;
+            backdrop-filter: blur(2px);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 36px;
+            font-size: 2.1em;
+            letter-spacing: 1px;
+            font-weight: bold;
+            color: #00c6ff;
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .stat-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #292929;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 8px #0002;
+            transition: transform 0.15s;
+        }
+        .stat-card:hover {
+            transform: scale(1.025);
+            box-shadow: 0 4px 16px #0003;
+        }
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.13em;
+            font-weight: 500;
+        }
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 40px;
+            text-align: center;
+        }
+        .stat-icon {
+            font-size: 1.3em;
+            opacity: 0.85;
+        }
+        @media (max-width: 600px) {
+            .stats-container { max-width: 98vw; padding: 18px 4vw; }
+            h2 { font-size: 1.3em; }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="stats-container">
+        <h2><i class="fa-solid fa-chart-column"></i> إحصائيات الموقع</h2>
+        <div class="stats-list">
+            <div class="stat-card"><span class="stat-label"><i class="fa-solid fa-users stat-icon"></i>عدد الزوار</span><span class="stat-value" id="visitors-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-solid fa-address-card stat-icon"></i>ضغطات البورتفوليو</span><span class="stat-value" id="portfolio-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-solid fa-envelope stat-icon"></i>ضغطات صراحة</span><span class="stat-value" id="sarhne-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-solid fa-mosque stat-icon"></i>ضغطات صدقة جارية</span><span class="stat-value" id="sadaqa-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-tiktok stat-icon"></i>ضغطات تيك توك</span><span class="stat-value" id="tiktok-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-telegram stat-icon"></i>ضغطات تليجرام</span><span class="stat-value" id="telegram-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-whatsapp stat-icon"></i>ضغطات واتساب</span><span class="stat-value" id="whatsapp-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-facebook stat-icon"></i>ضغطات فيسبوك</span><span class="stat-value" id="facebook-count">0</span></div>
+            <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-instagram stat-icon"></i>ضغطات انستجرام</span><span class="stat-value" id="instagram-count">0</span></div>
+        </div>
+    </div>
+    <script>
+      // إعداد Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyAVuLFl1SebU4blyQn7QiZD9iOqGZOoxDQ",
+        authDomain: "profile-social-ae8e2.firebaseapp.com",
+        projectId: "profile-social-ae8e2",
+        storageBucket: "profile-social-ae8e2.appspot.com",
+        messagingSenderId: "357588637122",
+        appId: "1:357588637122:web:bed704321232151f07b25b",
+        measurementId: "G-H851GDEN09",
+        databaseURL: "https://profile-social-ae8e2-default-rtdb.firebaseio.com/"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      function displayCounts() {
+        db.ref('counters').on('value', (snapshot) => {
+          const data = snapshot.val() || {};
+          const keys = [
+            'visitors', 'portfolio', 'sarhne', 'sadaqa',
+            'tiktok', 'telegram', 'whatsapp', 'facebook', 'instagram'
+          ];
+          keys.forEach(key => {
+            const el = document.getElementById(key + '-count');
+            if (el) el.textContent = data[key] || 0;
+          });
+        });
+      }
+      window.onload = displayCounts;
+    </script>
+</body>
+</html> 
