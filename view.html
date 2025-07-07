@@ -300,47 +300,84 @@
           let refDisplay = ref;
           // دالة استخراج اسم الحساب من الرابط
           function extractUsername(ref, domain) {
-            const regex = new RegExp(domain + '/(?!l\\.|p/|stories/|reel/|explore/|direct/|accounts/|about/|developer/|legal/|privacy/|terms/|help/|create/|directory/|topics/|challenge/|a/|n/|tv/|)[^/?#]+', 'i');
-            const match = ref.match(regex);
-            if (match) {
-              return match[0].split('/')[1];
+            // معالجة روابط l.instagram.com (روابط التحويل)
+            if (ref.includes('l.instagram.com')) {
+              // استخراج الرابط الأصلي من باراميتر ?u=...
+              const urlMatch = ref.match(/[?&]u=([^&]+)/i);
+              if (urlMatch) {
+                try {
+                  // نفك ترميز الرابط
+                  const realUrl = decodeURIComponent(urlMatch[1]);
+                  // نعيد استدعاء الدالة نفسها على الرابط الأصلي
+                  return extractUsername(realUrl, domain);
+                } catch(e) {}
+              }
+            }
+            // تويتر، فيسبوك، انستجرام، سناب شات، لينكدإن، تيك توك: https://domain.com/username
+            const simpleDomains = [
+              'instagram.com', 'facebook.com', 'twitter.com', 'snapchat.com', 'linkedin.com', 'tiktok.com'
+            ];
+            if (simpleDomains.some(d => ref.includes(d))) {
+              const m = ref.match(/\/(?:[a-zA-Z0-9_.-]+\.)?(?:instagram|facebook|twitter|snapchat|linkedin|tiktok)\.com\/([^/?#]+)/i);
+              if (m) return m[1];
+            }
+            // يوتيوب: قناة أو مستخدم أو اسم مخصص
+            if (ref.includes('youtube.com')) {
+              // قناة
+              let m = ref.match(/youtube\.com\/channel\/([^/?#]+)/i);
+              if (m) return m[1];
+              // مستخدم
+              m = ref.match(/youtube\.com\/user\/([^/?#]+)/i);
+              if (m) return m[1];
+              // اسم مخصص
+              m = ref.match(/youtube\.com\/c\/([^/?#]+)/i);
+              if (m) return m[1];
+            }
+            // يوتيوب مختصر
+            if (ref.includes('youtu.be')) {
+              const m = ref.match(/youtu\.be\/([^/?#]+)/i);
+              if (m) return m[1];
+            }
+            // تليجرام
+            if (/t\.me|telegram\.me|telegram\.org/i.test(ref)) {
+              const m = ref.match(/(?:t\.me|telegram\.me|telegram\.org)\/([^/?#]+)/i);
+              if (m) return m[1];
+            }
+            // واتساب
+            if (/wa\.me|whatsapp\.com/i.test(ref)) {
+              const m = ref.match(/(?:wa\.me|whatsapp\.com)\/([^/?#]+)/i);
+              if (m) return m[1];
             }
             return '';
           }
           if (!ref || ref === 'مباشر') {
             refDisplay = 'مباشر';
           } else if (/instagram\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'instagram\.com');
+            let username = extractUsername(ref, 'instagram.com');
             refDisplay = 'انستجرام' + (username ? ` (${username})` : '');
           } else if (/facebook\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'facebook\.com');
+            let username = extractUsername(ref, 'facebook.com');
             refDisplay = 'فيسبوك' + (username ? ` (${username})` : '');
           } else if (/t\.me|telegram\.me|telegram\.org/i.test(ref)) {
-            let username = '';
-            const match = ref.match(/(?:t\.me|telegram\.me|telegram\.org)\/([^/?#]+)/i);
-            if (match) username = match[1];
+            let username = extractUsername(ref, 'telegram');
             refDisplay = 'تليجرام' + (username ? ` (${username})` : '');
           } else if (/wa\.me|whatsapp\.com/i.test(ref)) {
-            let username = '';
-            const match = ref.match(/(?:wa\.me|whatsapp\.com)\/([^/?#]+)/i);
-            if (match) username = match[1];
+            let username = extractUsername(ref, 'whatsapp');
             refDisplay = 'واتساب' + (username ? ` (${username})` : '');
           } else if (/twitter\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'twitter\.com');
+            let username = extractUsername(ref, 'twitter.com');
             refDisplay = 'تويتر' + (username ? ` (${username})` : '');
           } else if (/snapchat\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'snapchat\.com');
+            let username = extractUsername(ref, 'snapchat.com');
             refDisplay = 'سناب شات' + (username ? ` (${username})` : '');
           } else if (/youtube\.com|youtu\.be/i.test(ref)) {
-            let username = '';
-            const match = ref.match(/(?:youtube\.com\/(?:c|user|channel)\/|youtu\.be\/)([^/?#]+)/i);
-            if (match) username = match[1];
+            let username = extractUsername(ref, 'youtube');
             refDisplay = 'يوتيوب' + (username ? ` (${username})` : '');
           } else if (/linkedin\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'linkedin\.com');
+            let username = extractUsername(ref, 'linkedin.com');
             refDisplay = 'لينكدإن' + (username ? ` (${username})` : '');
           } else if (/tiktok\.com/i.test(ref)) {
-            let username = extractUsername(ref, 'tiktok\.com');
+            let username = extractUsername(ref, 'tiktok.com');
             refDisplay = 'تيك توك' + (username ? ` (${username})` : '');
           } else if (/google\./i.test(ref)) {
             refDisplay = 'جوجل';
