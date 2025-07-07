@@ -77,6 +77,143 @@
             .stats-container { max-width: 98vw; padding: 18px 4vw; }
             h2 { font-size: 1.3em; }
         }
+        /* جدول السجل */
+        .logs-table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #232323;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            font-size: 1em;
+        }
+        .logs-table th, .logs-table td {
+            padding: 10px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .logs-table th {
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.05em;
+            border-bottom: 2px solid #1a1a1a;
+            white-space: nowrap;
+        }
+        .logs-table tr:nth-child(even) {
+            background: #292929;
+        }
+        .logs-table tr:nth-child(odd) {
+            background: #232323;
+        }
+        .logs-table td.device-cell {
+            font-size: 0.93em;
+            color: #7fd0ff;
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            direction: ltr;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .logs-table td.device-cell.expanded {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            background: #181f2a;
+            color: #00c6ff;
+            z-index: 2;
+            position: relative;
+            box-shadow: 0 2px 12px #0005;
+            font-size: 0.88em;
+            padding: 12px 10px 12px 10px;
+            line-height: 1.7;
+            word-break: break-all;
+            max-width: 260px;
+            min-width: 120px;
+            border-radius: 8px;
+            margin: 4px 0;
+        }
+        .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell {
+            font-size: 0.93em;
+            color: #b6eaff;
+            max-width: 90px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            direction: ltr;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .logs-table td.ref-cell {
+            max-width: 120px;
+            color: #ffd180;
+        }
+        .logs-table td.os-cell.expanded, .logs-table td.type-cell.expanded, .logs-table td.ref-cell.expanded {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            background: #181f2a;
+            color: #00c6ff;
+            z-index: 2;
+            position: relative;
+            box-shadow: 0 2px 12px #0005;
+            font-size: 0.88em;
+            padding: 12px 10px 12px 10px;
+            line-height: 1.7;
+            word-break: break-all;
+            max-width: 260px;
+            min-width: 80px;
+            border-radius: 8px;
+            margin: 4px 0;
+        }
+        .logs-table td.os-cell:after, .logs-table td.type-cell:after, .logs-table td.ref-cell:after {
+            content: ' (اضغط لعرض الكل)';
+            font-size: 0.8em;
+            color: #3ad0ff;
+            opacity: 0.7;
+            margin-right: 4px;
+            display: inline-block;
+        }
+        .logs-table td.os-cell.expanded:after, .logs-table td.type-cell.expanded:after, .logs-table td.ref-cell.expanded:after {
+            content: ' (إخفاء)';
+            color: #ffb300;
+        }
+        .logs-table td.device-cell i {
+            margin-left: 4px;
+            color: #00c6ff;
+            opacity: 0.7;
+        }
+        .logs-table td {
+            border-bottom: 1px solid #222;
+        }
+        @media (max-width: 900px) {
+            .logs-table th, .logs-table td { font-size: 0.92em; }
+            .logs-table td.device-cell, .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 60px; }
+            .logs-table td.ref-cell { max-width: 80px; }
+        }
+        @media (max-width: 600px) {
+            .logs-table th, .logs-table td { padding: 6px 2px; font-size: 0.93em; }
+            .logs-table td.device-cell { max-width: 80px; }
+            .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 40px; }
+            .logs-table td.ref-cell { max-width: 60px; }
+        }
+        .logs-table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 2px;
+        }
+        .logs-table-wrapper::-webkit-scrollbar {
+            height: 8px;
+            background: #222;
+        }
+        .logs-table-wrapper::-webkit-scrollbar-thumb {
+            background: #00c6ff;
+            border-radius: 8px;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -94,6 +231,30 @@
             <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-whatsapp stat-icon"></i>ضغطات واتساب</span><span class="stat-value" id="whatsapp-count">0</span></div>
             <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-facebook stat-icon"></i>ضغطات فيسبوك</span><span class="stat-value" id="facebook-count">0</span></div>
             <div class="stat-card"><span class="stat-label"><i class="fa-brands fa-instagram stat-icon"></i>ضغطات انستجرام</span><span class="stat-value" id="instagram-count">0</span></div>
+        </div>
+    </div>
+    <!-- سجل الأحداث -->
+    <div class="stats-container" style="margin-top:32px;">
+        <h2 style="font-size:1.3em;"><i class="fa-solid fa-clock-rotate-left"></i> سجل الأحداث</h2>
+        <div class="logs-table-wrapper">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>نوع الحدث</th>
+                        <th>الوقت</th>
+                        <th><i class="fa-solid fa-laptop-code"></i> الجهاز</th>
+                        <th><i class="fa-solid fa-microchip"></i> النظام</th>
+                        <th><i class="fa-solid fa-mobile-screen-button"></i> النوع</th>
+                        <th><i class="fa-solid fa-link"></i> المصدر</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-table">
+                    <tr><td colspan="6" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align:center; margin-top:12px;">
+            <button id="show-more-btn" style="background:linear-gradient(90deg,#00c6ff,#0072ff);color:#fff;border:none;padding:8px 22px;border-radius:8px;font-size:1em;cursor:pointer;box-shadow:0 2px 8px #0002;transition:background 0.2s;">عرض المزيد</button>
         </div>
     </div>
     <script>
@@ -124,7 +285,92 @@
           });
         });
       }
-      window.onload = displayCounts;
+      let logsData = [];
+      let logsShown = 10;
+      function renderLogsTable() {
+        const logsToShow = logsData.slice(0, logsShown);
+        const rows = logsToShow.map(log => {
+          const date = new Date(log.timestamp);
+          const formatted = date.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+          let device = log.device || '';
+          if (device.length > 40) device = device.slice(0, 40) + '...';
+          let os = log.os || '';
+          let deviceType = log.deviceType || '';
+          let ref = log.referrer || '';
+          if (os.length > 12) os = os.slice(0, 12) + '...';
+          if (deviceType.length > 12) deviceType = deviceType.slice(0, 12) + '...';
+          if (ref.length > 30) ref = ref.slice(0, 30) + '...';
+          return `<tr>
+            <td>${log.type}</td>
+            <td>${formatted}</td>
+            <td class="device-cell" data-full="${log.device ? log.device.replace(/\"/g, '&quot;') : ''}"><i class='fa-solid fa-laptop'></i> ${device}</td>
+            <td class="os-cell" data-full="${log.os ? log.os.replace(/\"/g, '&quot;') : ''}">${os}</td>
+            <td class="type-cell" data-full="${log.deviceType ? log.deviceType.replace(/\"/g, '&quot;') : ''}">${deviceType}</td>
+            <td class="ref-cell" data-full="${log.referrer ? log.referrer.replace(/\"/g, '&quot;') : ''}" title="${log.referrer || ''}">${ref}</td>
+          </tr>`;
+        }).join('');
+        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
+        // إظهار/إخفاء زر عرض المزيد
+        const btn = document.getElementById('show-more-btn');
+        if (logsData.length > logsShown) {
+          btn.style.display = 'inline-block';
+        } else {
+          btn.style.display = 'none';
+        }
+      }
+      function displayLogs() {
+        db.ref('logs').limitToLast(100).on('value', (snapshot) => {
+          const logs = snapshot.val() || {};
+          logsData = Object.values(logs)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          renderLogsTable();
+        });
+      }
+      window.onload = function() {
+        displayCounts();
+        displayLogs();
+      };
+      // توسعة خلية الجهاز عند النقر
+      document.addEventListener('click', function(e) {
+        const cell = e.target;
+        // الجهاز
+        if (cell.classList.contains('device-cell')) {
+          if (cell.classList.contains('expanded')) {
+            let device = cell.getAttribute('data-full') || '';
+            if (device.length > 40) device = device.slice(0, 40) + '...';
+            cell.innerHTML = `<i class='fa-solid fa-laptop'></i> ${device}`;
+            cell.classList.remove('expanded');
+          } else {
+            const full = cell.getAttribute('data-full') || '';
+            cell.innerHTML = `<i class='fa-solid fa-laptop'></i> ${full}`;
+            cell.classList.add('expanded');
+          }
+        }
+        // النظام أو النوع أو المصدر
+        if (cell.classList.contains('os-cell') || cell.classList.contains('type-cell') || cell.classList.contains('ref-cell')) {
+          const key = cell.classList.contains('os-cell') ? 'os' : cell.classList.contains('type-cell') ? 'deviceType' : 'referrer';
+          if (cell.classList.contains('expanded')) {
+            let val = cell.getAttribute('data-full') || '';
+            if (key === 'os' && val.length > 12) val = val.slice(0, 12) + '...';
+            if (key === 'deviceType' && val.length > 12) val = val.slice(0, 12) + '...';
+            if (key === 'referrer' && val.length > 30) val = val.slice(0, 30) + '...';
+            cell.textContent = val;
+            cell.classList.remove('expanded');
+          } else {
+            const full = cell.getAttribute('data-full') || '';
+            cell.textContent = full;
+            cell.classList.add('expanded');
+          }
+        }
+      });
+      // زر عرض المزيد
+      document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('show-more-btn');
+        btn.addEventListener('click', function() {
+          logsShown += 10;
+          renderLogsTable();
+        });
+      });
     </script>
 </body>
 </html> 

@@ -98,16 +98,42 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // حفظ سجل الأحداث
+        function logEvent(type) {
+            const logRef = db.ref('logs').push();
+            // استخراج نظام التشغيل بشكل مبسط
+            let os = 'Unknown';
+            if (navigator.userAgent.indexOf('Win') !== -1) os = 'Windows';
+            else if (navigator.userAgent.indexOf('Mac') !== -1) os = 'MacOS';
+            else if (navigator.userAgent.indexOf('Linux') !== -1) os = 'Linux';
+            else if (/Android/i.test(navigator.userAgent)) os = 'Android';
+            else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) os = 'iOS';
+            // نوع الجهاز
+            const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+            // من أين جاء الزائر
+            const referrer = document.referrer || 'مباشر';
+            logRef.set({
+                type: type,
+                timestamp: new Date().toISOString(),
+                device: navigator.userAgent,
+                os: os,
+                deviceType: deviceType,
+                referrer: referrer
+            });
+        }
+
         // زيادة عدد الزوار
         function incrementVisitorCount() {
             const ref = db.ref('counters/visitors');
             ref.transaction(current => (current || 0) + 1);
+            logEvent('زيارة');
         }
 
         // زيادة عدد الضغطات على زر
         function incrementButtonCount(buttonId) {
             const ref = db.ref('counters/' + buttonId);
             ref.transaction(current => (current || 0) + 1);
+            logEvent('ضغط على ' + buttonId);
         }
 
         window.addEventListener('DOMContentLoaded', function() {
