@@ -137,7 +137,7 @@
             border-radius: 8px;
             margin: 4px 0;
         }
-        .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell {
+        .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell, .logs-table td.ip-cell {
             font-size: 0.93em;
             color: #b6eaff;
             max-width: 90px;
@@ -152,7 +152,11 @@
             max-width: 120px;
             color: #ffd180;
         }
-        .logs-table td.os-cell.expanded, .logs-table td.type-cell.expanded, .logs-table td.ref-cell.expanded {
+        .logs-table td.ip-cell {
+            max-width: 120px;
+            color: #ff6b6b;
+        }
+        .logs-table td.os-cell.expanded, .logs-table td.type-cell.expanded, .logs-table td.ref-cell.expanded, .logs-table td.ip-cell.expanded {
             white-space: normal;
             overflow: visible;
             text-overflow: unset;
@@ -170,7 +174,7 @@
             border-radius: 8px;
             margin: 4px 0;
         }
-        .logs-table td.os-cell:after, .logs-table td.type-cell:after, .logs-table td.ref-cell:after {
+        .logs-table td.os-cell:after, .logs-table td.type-cell:after, .logs-table td.ref-cell:after, .logs-table td.ip-cell:after {
             content: ' (اضغط لعرض الكل)';
             font-size: 0.8em;
             color: #3ad0ff;
@@ -178,7 +182,7 @@
             margin-right: 4px;
             display: inline-block;
         }
-        .logs-table td.os-cell.expanded:after, .logs-table td.type-cell.expanded:after, .logs-table td.ref-cell.expanded:after {
+        .logs-table td.os-cell.expanded:after, .logs-table td.type-cell.expanded:after, .logs-table td.ref-cell.expanded:after, .logs-table td.ip-cell.expanded:after {
             content: ' (إخفاء)';
             color: #ffb300;
         }
@@ -192,13 +196,13 @@
         }
         @media (max-width: 900px) {
             .logs-table th, .logs-table td { font-size: 0.92em; }
-            .logs-table td.device-cell, .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 60px; }
+            .logs-table td.device-cell, .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell, .logs-table td.ip-cell { max-width: 60px; }
             .logs-table td.ref-cell { max-width: 80px; }
         }
         @media (max-width: 600px) {
             .logs-table th, .logs-table td { padding: 0px 2px; font-size: 0.93em; }
             .logs-table td.device-cell { max-width: 210px; }
-            .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell { max-width: 150px; }
+            .logs-table td.os-cell, .logs-table td.type-cell, .logs-table td.ref-cell, .logs-table td.ip-cell { max-width: 150px; }
             .logs-table td.ref-cell { max-width: 150px; }
         }
         .logs-table-wrapper {
@@ -247,10 +251,11 @@
                         <th><i class="fa-solid fa-microchip"></i> النظام</th>
                         <th><i class="fa-solid fa-mobile-screen-button"></i> النوع</th>
                         <th><i class="fa-solid fa-link"></i> المصدر</th>
+                        <th><i class="fa-solid fa-network-wired"></i> IP</th>
                     </tr>
                 </thead>
                 <tbody id="logs-table">
-                    <tr><td colspan="6" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -399,6 +404,12 @@
           if (deviceType.length > 12) deviceType = deviceType.slice(0, 12) + '...';
           if (refDisplay.length > 30) refDisplay = refDisplay.slice(0, 30) + '...';
           if (usernameDisplay && usernameDisplay.length > 30) usernameDisplay = usernameDisplay.slice(0, 30) + '...';
+          
+          // معالجة IP
+          let ip = log.ip || 'غير معروف';
+          let ipDisplay = ip;
+          if (ip.length > 15) ipDisplay = ip.slice(0, 15) + '...';
+          
           return `<tr>
             <td>${log.type}</td>
             <td>${formatted}</td>
@@ -406,9 +417,10 @@
             <td class="os-cell" data-full="${log.os ? log.os.replace(/\"/g, '&quot;') : ''}">${os}</td>
             <td class="type-cell" data-full="${log.deviceType ? log.deviceType.replace(/\"/g, '&quot;') : ''}">${deviceType}</td>
             <td class="ref-cell" data-full="${log.referrer ? log.referrer.replace(/\"/g, '&quot;') : ''}" title="${log.referrer || ''}">${refDisplay}</td>
+            <td class="ip-cell" data-full="${ip.replace(/\"/g, '&quot;')}"><i class='fa-solid fa-network-wired'></i> ${ipDisplay}</td>
           </tr>`;
         }).join('');
-        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
+        document.getElementById('logs-table').innerHTML = rows || '<tr><td colspan="7" style="text-align:center; color:#aaa;">لا يوجد أحداث بعد</td></tr>';
         // إظهار/إخفاء زر عرض المزيد
         const btn = document.getElementById('show-more-btn');
         if (logsData.length > logsShown) {
@@ -443,8 +455,8 @@
             cell.classList.add('expanded');
           }
         }
-        // النظام أو النوع أو المصدر
-        if (cell.classList.contains('os-cell') || cell.classList.contains('type-cell') || cell.classList.contains('ref-cell')) {
+        // النظام أو النوع أو المصدر أو IP
+        if (cell.classList.contains('os-cell') || cell.classList.contains('type-cell') || cell.classList.contains('ref-cell') || cell.classList.contains('ip-cell')) {
           if (cell.classList.contains('expanded')) {
             let val = cell.getAttribute('data-full') || '';
             cell.textContent = val;

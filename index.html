@@ -98,9 +98,24 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // الحصول على IP الجهاز
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('خطأ في الحصول على IP:', error);
+                return 'غير معروف';
+            }
+        }
+
         // حفظ سجل الأحداث
-        function logEvent(type) {
+        async function logEvent(type) {
             const logRef = db.ref('logs').push();
+            // الحصول على IP الجهاز
+            const clientIP = await getClientIP();
+            
             // استخراج نظام التشغيل بشكل مبسط
             let os = 'Unknown';
             if (navigator.userAgent.indexOf('Win') !== -1) os = 'Windows';
@@ -118,51 +133,52 @@
                 device: navigator.userAgent,
                 os: os,
                 deviceType: deviceType,
-                referrer: referrer
+                referrer: referrer,
+                ip: clientIP
             });
         }
 
         // زيادة عدد الزوار
-        function incrementVisitorCount() {
+        async function incrementVisitorCount() {
             const ref = db.ref('counters/visitors');
             ref.transaction(current => (current || 0) + 1);
-            logEvent('زيارة');
+            await logEvent('زيارة');
         }
 
         // زيادة عدد الضغطات على زر
-        function incrementButtonCount(buttonId) {
+        async function incrementButtonCount(buttonId) {
             const ref = db.ref('counters/' + buttonId);
             ref.transaction(current => (current || 0) + 1);
-            logEvent('ضغط على ' + buttonId);
+            await logEvent('ضغط على ' + buttonId);
         }
 
-        window.addEventListener('DOMContentLoaded', function() {
-            incrementVisitorCount();
+        window.addEventListener('DOMContentLoaded', async function() {
+            await incrementVisitorCount();
             // ربط الأزرار الرئيسية
-            document.getElementById('portfolio-btn').addEventListener('click', function() {
-                incrementButtonCount('portfolio');
+            document.getElementById('portfolio-btn').addEventListener('click', async function() {
+                await incrementButtonCount('portfolio');
             });
-            document.getElementById('sarhne-btn').addEventListener('click', function() {
-                incrementButtonCount('sarhne');
+            document.getElementById('sarhne-btn').addEventListener('click', async function() {
+                await incrementButtonCount('sarhne');
             });
-            document.getElementById('sadaqa-btn').addEventListener('click', function() {
-                incrementButtonCount('sadaqa');
+            document.getElementById('sadaqa-btn').addEventListener('click', async function() {
+                await incrementButtonCount('sadaqa');
             });
             // ربط أزرار السوشيال
-            document.getElementById('tiktok-btn').addEventListener('click', function() {
-                incrementButtonCount('tiktok');
+            document.getElementById('tiktok-btn').addEventListener('click', async function() {
+                await incrementButtonCount('tiktok');
             });
-            document.getElementById('telegram-btn').addEventListener('click', function() {
-                incrementButtonCount('telegram');
+            document.getElementById('telegram-btn').addEventListener('click', async function() {
+                await incrementButtonCount('telegram');
             });
-            document.getElementById('whatsapp-btn').addEventListener('click', function() {
-                incrementButtonCount('whatsapp');
+            document.getElementById('whatsapp-btn').addEventListener('click', async function() {
+                await incrementButtonCount('whatsapp');
             });
-            document.getElementById('facebook-btn').addEventListener('click', function() {
-                incrementButtonCount('facebook');
+            document.getElementById('facebook-btn').addEventListener('click', async function() {
+                await incrementButtonCount('facebook');
             });
-            document.getElementById('instagram-btn').addEventListener('click', function() {
-                incrementButtonCount('instagram');
+            document.getElementById('instagram-btn').addEventListener('click', async function() {
+                await incrementButtonCount('instagram');
             });
         });
     </script>
